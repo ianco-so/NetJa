@@ -1,26 +1,34 @@
 package  org.example.libs;
 /**
 * Esta classe representa um nó no grafo.
+ * Um nó do grafo tem um rotulo e um valor
+ * Um nó é igual a outro se os seus rótulos forem iguais
 * @author @ianco-so and @fawnbr
 */
-public class No{
-    private String nome;
+public class No <R extends Comparable<R>, V> {
+    private R rotulo;
+    private V valor;
 
-    public No(String nome) {
-        this.nome = nome;
+    public No(R rotulo) {
+        this.rotulo = rotulo;
+        this.valor = null;
+    }
+    public No(R rotulo, V valor) {
+        this.rotulo = rotulo;
+        this.valor = valor;
+    }
+    public R getRotulo() {
+        return this.rotulo;
     }
 
-    public String getNome() {
-        return nome;
-    }
+    public void setRotulo(R rotulo) { this.rotulo = rotulo;}
+    public V getValor() { return this.valor; }
 
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
+    public void setValor(V valor) { this.valor = valor; }
 
     @Override
     public String toString() {
-        return nome;
+        return "Rotulo: " + this.getRotulo().toString() + " - " + "Valor: " +this.getValor().toString();
     }
 
     @Override
@@ -28,20 +36,13 @@ public class No{
         if (obj == null) {
             return false;
         }
-        if (getClass() != obj.getClass()) {
+        if (this.getClass() != obj.getClass()) {
             return false;
         }
         final No other = (No) obj;
-        if ((this.nome == null) ? (other.nome != null) : !this.nome.equals(other.nome)) {
+        if ((this.getRotulo() == null) ? (other.getRotulo() != null) : !this.getRotulo().equals(other.getRotulo())) {
             return false;
         }
         return true;
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 7;
-        hash = 97 * hash + (this.nome != null ? this.nome.hashCode() : 0);
-        return hash;
     }
 }

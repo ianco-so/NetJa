@@ -8,85 +8,233 @@ import java.util.Map;
 import java.util.Set;
 
 /**
-* Essa clas
-*/
-public class ConjuntosDisjuntos<T> {
-private List<Map<Integer, Set<T>>> disjointSet;
- 
-    public ConjuntosDisjuntos()
-    {
-        disjointSet = new ArrayList<Map<Integer, Set<T>>>();
-    }
- 
-    public void create_set(T element)
-    {
-        Map<Integer, Set<T>> map = new HashMap<Integer, Set<T>>();
-        Set<T> set = new HashSet<T>();
-        set.add(element);
-        map.put(element, set);
-        disjointSet.add(map);
-    }
- 
-    public void union(T first, T second)
-    {
-        T first_rep = find_set(first);
-        T second_rep = find_set(second);
- 
-        Set<T> first_set = null;
-        Set<T> second_set = null;
- 
-        for (int index = 0; index < disjointSet.size(); index++)
-        {
-            Map<Integer, Set<T>> map = disjointSet.get(index);
-            if (map.containsKey(first_rep))
-            {
-                first_set = map.get(first_rep);
-            } else if (map.containsKey(second_rep))
-            { 
-                second_set = map.get(second_rep);
-            }
-        }
- 
-        if (first_set != null && second_set != null)
-        first_set.addAll(second_set);
- 
-        for (int index = 0; index < disjointSet.size(); index++)
-        {
-            Map<Integer, Set<T>> map = disjointSet.get(index);
-            if (map.containsKey(first_rep))
-            {
-                map.put(first_rep, first_set);
-            } else if (map.containsKey(second_rep))
-            {
-                map.remove(second_rep);
-                disjointSet.remove(index);
-            }
-        }
- 
-        return;
-    }
- 
-    public T find_set(T element)
-    {
-        for (int index = 0; index < disjointSet.size(); index++)
-        {
-            Map<Integer, Set<T>> map = disjointSet.get(index);
-            Set<T> keySet = map.keySet();
-            for (Integer key : keySet)
-            {
-                Set<T> set = map.get(key);
-                if (set.contains(element))
-                {
-                    return key;
-                }
-            }
-        }
-        return -1;
-    }
- 
-    public int getNumberofConjuntosDisjuntos()
-    {
-        return disjointSet.size();
+ * Essa classe implementa um conjunto disjunto.
+ * Ela é uma estrutura de dados que permite gerar a floresta,
+ * inserir nós a floresta, unir conjuntos, verificar se dois
+ * elementos estão no mesmo conjunto e achar o nó representante
+ * de um conjunto.
+ * Essa implementação é uma lista de NoConjuntoDisjunto<R, V>
+ *
+ * @param <R>: O tipo de rotulo do nó, deve implementar a interface Comparable
+ * @param <V>: O tipo de valor do nó do conjunto
+ */
+public class ConjuntosDisjuntos<R extends Comparable<R>, V> {
+    private List<NoConjuntoDisjunto<R, V>> floresta;
+
+    /**
+     * Construtor da classe ConjuntosDisjuntos
+     * Inicializa a floresta como uma lista vazia
+     */
+    public ConjuntosDisjuntos() {
+        this.floresta = new ArrayList<>();
     }
 
+    /**
+     * Construtor da classe ConjuntosDisjuntos
+     * Inicializa a floresta com uma lista de nós
+     *
+     * @param nos: Uma lista de nós
+     */
+    public ConjuntosDisjuntos(NoConjuntoDisjunto... nos) {
+        this.floresta = new ArrayList<>();
+        //Adiciona os nós passados como parâmetro se eles não já estiverem
+        //na floresta e não forem nulos.
+        for (NoConjuntoDisjunto<R, V> no : nos) {
+            if (no != null && !this.floresta.contains(no)) {
+                no.setPai(no); //O pai de um nó é ele mesmo quando ele é o representante do conjunto
+                no.setRank(0); //O rank de um nó é 0 quando ele não tem filhos, nesse caso é o representante do conjunto unitario
+                this.floresta.add(no);
+            }
+//            else {
+//                throw new IllegalArgumentException("Nó nulo ou já existente na floresta");
+//            }
+        }
+    }
+
+    /**
+     * Construtor da classe ConjuntosDisjuntos
+     * Inicializa a floresta com uma lista rotulos
+     *
+     * @param rotulos: Uma lista de rotulos
+     */
+    public ConjuntosDisjuntos(R... rotulos) {
+        //this.floresta = new ArrayList<>();
+        for (R rotulo : rotulos) {
+            if (rotulo != null) {
+                NoConjuntoDisjunto<R, V> no = new NoConjuntoDisjunto<>(rotulo, null);
+                if (!this.floresta.contains(no)) {
+                    no.setPai(no); //O pai de um nó é ele mesmo quando ele é o representante do conjunto
+                    no.setRank(0); //O rank de um nó é 0 quando ele não tem filhos, nesse caso é o representante do conjunto unitario
+                    this.floresta.add(no);
+                }
+//                else {
+//                    throw new IllegalArgumentException("Nó já existente na floresta");
+//                }
+            }
+//            else {
+//                throw new IllegalArgumentException("Não pode adicionar um nó nulo a floresta");
+//            }
+        }
+    }
+
+    /**
+     * Criar um novo conjunto disjunto, ou seja,
+     * insere um nó na floresta.
+     */
+    public void makeSet(NoConjuntoDisjunto<R, V> no) {
+        if (no != null && !this.floresta.contains(no)) {
+            no.setPai(no);
+            no.setRank(0);
+            this.floresta.add(no);
+        }
+    }
+
+    /**
+     * Criar um novo conjunto disjunto, ou seja,
+     * insere um nó na floresta com um rotulo e um valor.
+     *
+     * @param rotulo: O rotulo do novo nó
+     * @param valor:  O valor do novo nó
+     */
+    public void makeSet(R rotulo, V valor) {
+        if (rotulo != null) {
+            NoConjuntoDisjunto<R, V> no = new NoConjuntoDisjunto<>(rotulo, valor);
+            if (!this.floresta.contains(no)) {
+                no.setPai(no);
+                no.setRank(0);
+                this.floresta.add(no);
+            }
+        }
+    }
+
+    /**
+     * Encontra o nó que tem um determinado rotulo
+     * @param rotulo: O rotulo do nó que se deseja encontrar
+     * @return O nó que deseja-se encontrar ou nulo se não existir.
+     * @throws IllegalArgumentException: Se o rotulo for nulo
+     */
+    public NoConjuntoDisjunto<R, V> getNo (R rotulo) {
+        if (rotulo == null) {
+            throw new IllegalArgumentException("Rotulo nulo");
+        }
+        for (NoConjuntoDisjunto<R, V> no : this.getFloresta()) {
+            if (no.getRotulo().equals(rotulo)) {
+                return no;
+            }
+        }
+        return null;
+    }
+    /**
+     * Criar um novo conjunto disjunto, ou seja,
+     * insere um nó na floresta com um rotulo.
+     *
+     * @param rotulo: O rotulo do novo nó
+     */
+    public void makeSet(R rotulo) {
+        if (rotulo != null) {
+            NoConjuntoDisjunto<R, V> no = new NoConjuntoDisjunto<>(rotulo);
+            if (!this.floresta.contains(no)) {
+                no.setPai(no);
+                no.setRank(0);
+                this.floresta.add(no);
+            }
+        }
+    }
+
+    /**
+     * Retorna a lista de nós da floresta
+     *
+     * @return: A lista de nós da floresta
+     */
+    public List<NoConjuntoDisjunto<R, V>> getFloresta() {
+        return this.floresta;
+    }
+
+    /**
+     * Retorna o nó representante do conjunto que o nó passado como parâmetro pertence
+     *
+     * @param no: O nó que se deseja saber o representante
+     * @return: O nó representante do conjunto que o nó passado como parâmetro pertence
+     */
+    public NoConjuntoDisjunto<R, V> findSet(NoConjuntoDisjunto<R, V> no) {
+        if (no == null) {
+            throw new IllegalArgumentException("Nó nulo");
+        }
+        if (!this.getFloresta().contains(no)) {
+            throw new IllegalArgumentException("Nó não pertence a floresta");
+        }
+        if (no.getPai() == no) {
+            return no;
+        } else {
+            return findSet(no.getPai());
+        }
+    }
+
+    /**
+     * Verifica se dois nós pertencem ao mesmo conjunto
+     * ou seja, se eles tem o mesmo representante
+     * @param no1: O primeiro nó
+     * @param no2: O segundo nó
+     * @return true se os nós pertencem a mesma árvore, false caso contrário
+     */
+    public boolean sameSet(NoConjuntoDisjunto<R, V> no1, NoConjuntoDisjunto<R, V> no2) {
+        if (no1 == null || no2 == null) {
+            throw new IllegalArgumentException("Nó nulo");
+        }
+        if (!this.getFloresta().contains(no1) || !this.getFloresta().contains(no2)) {
+            throw new IllegalArgumentException("O(s) nó(s) não pertence(m) a floresta");
+        }
+        return this.findSet(no1) == this.findSet(no2);
+    }
+
+    /**
+     * Une dois conjuntos disjuntos que pertencem a floresta
+     * essa união não é feita com base nos tamanhos das floresta
+     * apenas une o representante do outroNo com o no;
+     * @param no: O que deve ser fundido  com o outro nó
+     * @param outroNo: O que deve ser fundido com o nó
+     * @return true os conseguiram ser unídos ou já estavam unidos e false caso contrário
+     */
+    public boolean union(NoConjuntoDisjunto<R, V> no, NoConjuntoDisjunto<R, V> outroNo) {
+        if (no == null || outroNo == null) {
+            return false;
+        }
+        if (!this.getFloresta().contains(no) || !this.getFloresta().contains(outroNo)) {
+            return false;
+        }
+        if (this.sameSet(no, outroNo)) {
+            return true;
+        }
+        //NoConjuntoDisjunto<R, V> representanteNo = this.findSet(no);
+        NoConjuntoDisjunto<R, V> representanteOutroNo = this.findSet(outroNo);
+        representanteOutroNo.setPai(no);
+        return true;
+    }
+    /**
+     * Conjuntos são iguais quando todos os seus elementos são iguais
+     * para essa implementação basta que todos os elementos de um conjunto
+     * disjunto estejam no outro conjunto disjunto e vice-versa para
+     * que os conjuntos sejam iguais.
+     *
+     * @param obj: O conjunto que se deseja comparar
+     * @return: true se os conjuntos forem iguais, false caso contrário
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (obj == this) {
+            return true;
+        }
+        if (!(obj instanceof ConjuntosDisjuntos)) {
+            return false;
+        }
+        ConjuntosDisjuntos<R, V> conjunto = (ConjuntosDisjuntos<R, V>) obj;
+        if (conjunto != null) {
+            return this.floresta.containsAll(conjunto.getFloresta())
+                    && conjunto.getFloresta().containsAll(this.floresta);
+        }
+        return false;
+    }
 }

@@ -1,6 +1,6 @@
 package  org.example.libs;
 
-import java.util.List;
+import java.util.Set;
 
 /**
 * Um grafo é um conjunto de nós e um conjunto de arestas.
@@ -11,8 +11,8 @@ import java.util.List;
 * @author @ianco-so and @fawnbr
 */
 public class Grafo {
-    private  List<No> nos;
-    private  List<Aresta> arestas;
+    private  Set<No> nos;
+    private  Set<Aresta> arestas;
 
     public Grafo(List<No> nos, List<Aresta> arestas) {
         this.nos = nos;
