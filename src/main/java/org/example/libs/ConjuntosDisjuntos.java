@@ -106,7 +106,22 @@ public class ConjuntosDisjuntos<R extends Comparable<R>, V> {
             }
         }
     }
-
+    /**
+     * Criar um novo conjunto disjunto, ou seja,
+     * insere um nó na floresta com um rotulo.
+     *
+     * @param rotulo: O rotulo do novo nó
+     */
+    public void makeSet(R rotulo) {
+        if (rotulo != null) {
+            NoConjuntoDisjunto<R, V> no = new NoConjuntoDisjunto<>(rotulo, null);
+            if (!this.floresta.contains(no)) {
+                no.setPai(no);
+                no.setRank(0);
+                this.floresta.add(no);
+            }
+        }
+    }
     /**
      * Encontra o nó que tem um determinado rotulo
      * @param rotulo: O rotulo do nó que se deseja encontrar
@@ -124,22 +139,6 @@ public class ConjuntosDisjuntos<R extends Comparable<R>, V> {
         }
         return null;
     }
-    /**
-     * Criar um novo conjunto disjunto, ou seja,
-     * insere um nó na floresta com um rotulo.
-     *
-     * @param rotulo: O rotulo do novo nó
-     */
-    public void makeSet(R rotulo) {
-        if (rotulo != null) {
-            NoConjuntoDisjunto<R, V> no = new NoConjuntoDisjunto<>(rotulo);
-            if (!this.floresta.contains(no)) {
-                no.setPai(no);
-                no.setRank(0);
-                this.floresta.add(no);
-            }
-        }
-    }
 
     /**
      * Retorna a lista de nós da floresta
@@ -150,65 +149,87 @@ public class ConjuntosDisjuntos<R extends Comparable<R>, V> {
         return this.floresta;
     }
 
+//    /**
+//     * Retorna o nó representante do conjunto que o nó passado como parâmetro pertence
+//     *
+//     * @param no: O nó que se deseja saber o representante
+//     * @return: O nó representante do conjunto que o nó passado como parâmetro pertence
+//     */
+//    public NoConjuntoDisjunto<R, V> findSet(NoConjuntoDisjunto<R, V> no) {
+//        if (no == null) {
+//            throw new IllegalArgumentException("Nó nulo");
+//        }
+//        if (!this.getFloresta().contains(no)) {
+//            throw new IllegalArgumentException("Nó não pertence a floresta");
+//        }
+//        if (no.getPai() == no) {
+//            return no;
+//        } else {
+//            return findSet(no.getPai());
+//        }
+//    }
     /**
-     * Retorna o nó representante do conjunto que o nó passado como parâmetro pertence
-     *
-     * @param no: O nó que se deseja saber o representante
-     * @return: O nó representante do conjunto que o nó passado como parâmetro pertence
+     * Dado o rótulo de um nó retorna o representante da árvore que ele pertence,
+     * caso ele esteja na floresta.
+     * @param rotulo: O rotulo do nó que se deseja saber o representante
+     * @return: O nó representante da árvore que o nó pertence
      */
-    public NoConjuntoDisjunto<R, V> findSet(NoConjuntoDisjunto<R, V> no) {
-        if (no == null) {
-            throw new IllegalArgumentException("Nó nulo");
+    public NoConjuntoDisjunto<R, V> findSet(R rotulo) {
+        if (rotulo == null) {
+            throw new IllegalArgumentException("Rotulo nulo");
         }
-        if (!this.getFloresta().contains(no)) {
+        NoConjuntoDisjunto<R, V> no = this.getNo(rotulo);
+        if (no == null) {
             throw new IllegalArgumentException("Nó não pertence a floresta");
         }
         if (no.getPai() == no) {
             return no;
         } else {
-            return findSet(no.getPai());
+            return findSet(no.getPai().getRotulo());
         }
     }
-
     /**
      * Verifica se dois nós pertencem ao mesmo conjunto
      * ou seja, se eles tem o mesmo representante
-     * @param no1: O primeiro nó
-     * @param no2: O segundo nó
+     * @param rotulo1: O rotulo do primeiro nó
+     * @param rotulo2: O rotulo do segundo nó
      * @return true se os nós pertencem a mesma árvore, false caso contrário
      */
-    public boolean sameSet(NoConjuntoDisjunto<R, V> no1, NoConjuntoDisjunto<R, V> no2) {
+    public boolean sameSet(R rotulo1, R rotulo2) {
+        if (rotulo1 == null || rotulo2 == null) {
+            throw new IllegalArgumentException("Rotulo nulo");
+        }
+        NoConjuntoDisjunto<R, V> no1 = this.getNo(rotulo1);
+        NoConjuntoDisjunto<R, V> no2 = this.getNo(rotulo2);
         if (no1 == null || no2 == null) {
-            throw new IllegalArgumentException("Nó nulo");
+            throw new IllegalArgumentException("Nó não pertence a floresta");
         }
-        if (!this.getFloresta().contains(no1) || !this.getFloresta().contains(no2)) {
-            throw new IllegalArgumentException("O(s) nó(s) não pertence(m) a floresta");
-        }
-        return this.findSet(no1) == this.findSet(no2);
+        return this.findSet(rotulo1) == this.findSet(rotulo2);
     }
 
     /**
      * Une dois conjuntos disjuntos que pertencem a floresta
      * essa união não é feita com base nos tamanhos das floresta
      * apenas une o representante do outroNo com o no;
-     * @param no: O que deve ser fundido  com o outro nó
-     * @param outroNo: O que deve ser fundido com o nó
-     * @return true os conseguiram ser unídos ou já estavam unidos e false caso contrário
+     * @param rotuloDoNo: O que deve ser fundido  com o outro nó
+     * @param rotuloDoOutroNo: O que deve ser fundido com o nó
+     * @return O rotulo do nó que é representante da arvore resultante da união
      */
-    public boolean union(NoConjuntoDisjunto<R, V> no, NoConjuntoDisjunto<R, V> outroNo) {
+    public R union(R rotuloDoNo, R rotuloDoOutroNo) {
+        if (rotuloDoNo == null || rotuloDoOutroNo == null) {
+            throw new IllegalArgumentException("Rotulo nulo");
+        }
+        NoConjuntoDisjunto<R, V> no = this.getNo(rotuloDoNo);
+        NoConjuntoDisjunto<R, V> outroNo = this.getNo(rotuloDoOutroNo);
         if (no == null || outroNo == null) {
-            return false;
+            throw new IllegalArgumentException("Nó não pertence a floresta");
         }
-        if (!this.getFloresta().contains(no) || !this.getFloresta().contains(outroNo)) {
-            return false;
+        if (this.sameSet(rotuloDoNo, rotuloDoOutroNo)) {
+            return findSet(rotuloDoNo).getRotulo();
         }
-        if (this.sameSet(no, outroNo)) {
-            return true;
-        }
-        //NoConjuntoDisjunto<R, V> representanteNo = this.findSet(no);
-        NoConjuntoDisjunto<R, V> representanteOutroNo = this.findSet(outroNo);
+        NoConjuntoDisjunto<R, V> representanteOutroNo = this.findSet(rotuloDoOutroNo);
         representanteOutroNo.setPai(no);
-        return true;
+        return this.findSet(no.getRotulo()).getRotulo();
     }
     /**
      * Conjuntos são iguais quando todos os seus elementos são iguais

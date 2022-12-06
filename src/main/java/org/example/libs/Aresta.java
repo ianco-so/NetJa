@@ -6,27 +6,70 @@ package  org.example.libs;
 * E entre dois nós pode existir apenas uma aresta.
 * @author @ianco-so and @fawnbr
 */
-public class Aresta implements Comparable<Aresta> {
-    private No n1;
-    private No n2;
+public class Aresta<R extends Comparable<R>, V> implements Comparable<Aresta> {
+    private final No<R,V> n1;
+    private final No<R,V> n2;
     private Integer custo;
 
-    public Aresta(No n1, No n2, Integer custo) {
+    public Aresta(No<R,V> n1, No<R,V> n2, Integer custo) {
+        if (n1 == null || n2 == null) {
+            throw new IllegalArgumentException("Nó nulo");
+        }
+        if (n1 == n2) {
+            throw new IllegalArgumentException("Nós iguais");
+        }
         this.n1 = n1;
         this.n2 = n2;
         this.custo = custo;
     }
+    public Aresta (No<R, V> n1, No<R,V> n2) {
+        if (n1 == null || n2 == null) {
+            throw new IllegalArgumentException("Nó nulo");
+        }
+        if (n1 == n2) {
+            throw new IllegalArgumentException("Nós iguais");
+        }
+        this.n1 = n1;
+        this.n2 = n2;
+        this.custo = 0;
+    }
+    public Aresta (R rotulo1, R rotulo2, Integer custo) {
+        if (rotulo1 == null || rotulo2 == null) {
+            throw new IllegalArgumentException("Nó nulo");
+        }
+        if (rotulo1.equals(rotulo2)) {
+            throw new IllegalArgumentException("Nós iguais");
+        }
+        this.n1 = new No<>(rotulo1);
+        this.n2 = new No<>(rotulo2);
+        this.custo = custo;
+    }
+    public Aresta (R rotulo1, R rotulo2) {
+        if (rotulo1 == null || rotulo2 == null) {
+            throw new IllegalArgumentException("Nó nulo");
+        }
+        if (rotulo1.equals(rotulo2)) {
+            throw new IllegalArgumentException("Nós iguais");
+        }
+        this.n1 = new No<>(rotulo1);
+        this.n2 = new No<>(rotulo2);
+        this.custo = 0;
+    }
 
     // GETTERS E SETTERS
 
-    public No getN1() {
+    public No<R,V> getNo1() {
         return this.n1;
     }
-    public No getN2() {
+    public No<R,V> getNo2() {
         return  this.n2;
     }
     public Integer getCusto() {
         return  this.custo;
+    }
+
+    public void setCusto(Integer custo) {
+        this.custo = custo;
     }
     public String toString() {
         return  "(" + n1 + ", " + n2 + ") -> Custo: " + custo;
@@ -41,20 +84,27 @@ public class Aresta implements Comparable<Aresta> {
             return false;
         }
         final Aresta other = (Aresta) obj;
-        if (this.getN1() != other.getN1() && (this.getN1() == null || !this.getN1().equals(other.getN1()))) {
+        if (other == null) {
             return false;
         }
-        if (this.getN2()!= other.n2 && (this.getN2() == null || !this.getN2().equals(other.getN2()))) {
+        if (this == other) {
+            return true;
+        }
+        if (this.getNo1() == null    ||
+            this.getNo2() == null    ||
+            other.getNo1() == null   ||
+            other.getNo2() == null   ) {
             return false;
         }
-        if (this.getCusto() != other.getCusto()) {
+        if ((this.getNo1() != other.getNo1() && this.getNo1() != other.getNo2()) ||
+            (this.getNo2() != other.getNo1() && this.getNo2() != other.getNo2())   ) {
             return false;
         }
         return true;
     }
 
     @Override
-    public int compareTo(Aresta o) {
-        return this.getCusto() - o.getCusto();
+    public int compareTo(Aresta a) {
+        return this.getCusto() - a.getCusto();
     }
 }

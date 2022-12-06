@@ -28,7 +28,7 @@ public class No <R extends Comparable<R>, V> {
 
     @Override
     public String toString() {
-        return "Rotulo: " + this.getRotulo().toString() + " - " + "Valor: " +this.getValor().toString();
+        return this.getRotulo().toString();
     }
 
     @Override

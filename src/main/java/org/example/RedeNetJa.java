@@ -72,4 +72,10 @@ public class RedeNetJa {
             custoConexoes.add(new ArrayList<>());
         }
     }
+
+    @Override
+    public String toString() {
+        return "RedeNetJa [numeroResidencias=" + numeroResidencias + ", numeroMaximoConexoes=" + numeroMaximoConexoes
+                + ", custoConexoes=" + custoConexoes + "]";
+    }
 }
