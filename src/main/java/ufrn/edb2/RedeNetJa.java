@@ -1,4 +1,4 @@
-package org.example;
+package ufrn.edb2;
 import java.util.ArrayList;
 import java.util.List;
 /**

@@ -1,4 +1,4 @@
-package org.example;
+package ufrn.edb2;
 
 import java.io.File;
 import java.io.FileNotFoundException;

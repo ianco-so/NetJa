@@ -1,9 +1,9 @@
-package  org.example.libs;
+package  ufrn.edb2.libs;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
 * Um grafo é um conjunto de nós e um conjunto de arestas.
@@ -13,9 +13,9 @@ import java.util.Set;
 * Este grafo não é direcionado, então cada aresta conecta dois nós em ambas as direções.
 * @author @ianco-so and @fawnbr
 */
-public class Grafo<R extends Comparable<R>, V> {
-    private  Set<No<R, V>> nos;
-    private  Set<Aresta<R, V>> arestas;
+public class Grafo<R extends Comparable<R>> {
+    private  Set<No<R>> nos;
+    private  Set<Aresta<R>> arestas;
 
     /**
      * Construtor de um grafo que tem uma lista
@@ -26,28 +26,28 @@ public class Grafo<R extends Comparable<R>, V> {
         this.nos = new HashSet<>();
         this.arestas = new HashSet<>();
     }
-    public Grafo(No<R, V>... nos) {
+    public Grafo(No<R>... nos) {
         this.nos = new HashSet<>();
         this.arestas = new HashSet<>();
-        for (No<R, V> no : nos) {
+        for (No<R> no : nos) {
             this.nos.add(no);
         }
     }
-    public Grafo(List<No<R, V>> nos) {
+    public Grafo(List<No<R>> nos) {
         this.nos = new HashSet<>();
         this.arestas = new HashSet<>();;
-        for (No<R, V> no : nos) {
+        for (No<R> no : nos) {
             this.nos.add(no);
         }
     }
-    public Grafo(List<No<R, V>> nos, List<Aresta<R, V>> arestas) {
+    public Grafo(List<No<R>> nos, List<Aresta<R>> arestas) {
         this.nos = new HashSet<>();
         this.arestas = new HashSet<>();
-        for (No<R, V> no : nos) {
+        for (No<R> no : nos) {
             this.nos.add(no);
         }
         //Se os nós das arestas existirem no grafo, então adiciona a aresta ao grafo.
-        for (Aresta<R, V> aresta : arestas) {
+        for (Aresta<R> aresta : arestas) {
             if (this.nos.contains(aresta.getNo1()) && this.nos.contains(aresta.getNo2())) {
                 this.arestas.add(aresta);
             }
@@ -58,7 +58,7 @@ public class Grafo<R extends Comparable<R>, V> {
      * Adiciona um nó no grafo.
     * @param no: Nó a ser adicionado.
     */
-    public void adicionarNo(No<R, V> no) {
+    public void adicionarNo(No<R> no) {
         this.nos.add(no);
     }
 
@@ -66,13 +66,18 @@ public class Grafo<R extends Comparable<R>, V> {
      * Adiciona uma aresta no grafo.
     * @param aresta  Aresta a ser adicionada.
     */
-    public void adicionarAresta(Aresta<R, V> aresta) {
+    public void adicionarAresta(Aresta<R> aresta) {
         if (this.nos.contains(aresta.getNo1()) && this.nos.contains(aresta.getNo2())) {
             this.arestas.add(aresta);
         }
     }
-    public void adicionarArestas(Aresta<R, V>... arestas) {
-        for (Aresta<R, V> aresta : arestas) {
+
+    /**
+     * Adiciona um conjunto de arestas no grafo.
+     * @param arestas Lista de arestas a serem adicionadas.
+     */
+    public void adicionarArestas(List<Aresta<R>> arestas) {
+        for (Aresta<R> aresta : arestas) {
             if (this.nos.contains(aresta.getNo1()) && this.nos.contains(aresta.getNo2())) {
                 this.arestas.add(aresta);
             }
@@ -83,32 +88,25 @@ public class Grafo<R extends Comparable<R>, V> {
     * Obtém os nós de um grafo.
     * @return Os nós do grafo.
     */
-    public List<No<R, V>> getNos() {
-        List<No<R, V>> nosList = new ArrayList<No<R, V>>();
-        No<R, V>
-        return (No<R,V>[]) this.nos.toArray();
+    public List<No<R>> getNos() {
+        return this.nos.stream().collect(Collectors.toList());
     }
 
     /**
     * Obtém as arestas de um grafo.
     * @return As arestas do grafo.
     */
-    public List<Aresta<R, V>> getArestas() {
-        List<Aresta<R, V>> arestasList = new ArrayList<Aresta<R, V>>();
-        Aresta<R, V> [] arestasVec = new Aresta[this.arestas.size()];
-        arestasVec = this.arestas.toArray(arestasVec);
-        for (Aresta<R, V> aresta : arestasVec) {
-            arestasList.add(aresta);
-        }
-        return arestasList;
+    public List<Aresta<R>> getArestas() {
+        return this.arestas.stream().collect(Collectors.toList());
     }
+    
     /**
      * Obtém o nó de um grafo que tem um rótulo específico.
      * @param rotulo: Rótulo do nó a ser obtido.
      * @return O nó que tem o rótulo especificado.
      */
-    public No<R, V> getNo(R rotulo) {
-        for (No<R, V> no : this.nos) {
+    public No<R> getNo(R rotulo) {
+        for (No<R> no : this.nos) {
             if (no.getRotulo().equals(rotulo)) {
                 return no;
             }
@@ -132,16 +130,49 @@ public class Grafo<R extends Comparable<R>, V> {
         return this.arestas.size();
     }
 
+    /**
+     * Retorna o custo total, somando todas as arestas.
+     * @return Custo total de todas as arestas.
+     */
+    public Integer getCustoTotal() {
+        return arestas.stream().reduce(0, (subtotal, aresta) -> subtotal + aresta.getCusto(), Integer::sum);
+    }
+
     @Override
     public String toString() {
         String str = "Grafo: \n";
-        for (Aresta<R, V> aresta : this.arestas) {
+        for (Aresta<R> aresta : this.arestas) {
             str += aresta.toString() + "\n";
         }
-        for (No<R, V> no : this.nos) {
-            str += no.toString() + "\n";
+        for (No<R> no : this.nos) {
+            str += no.toString() + " ";
         }
+        str += "\n";
 
+        str += "Custo total: " + this.getCustoTotal() + "\n";
         return str;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Grafo<?> other = (Grafo<?>) obj;
+        if (other.nos.isEmpty() || this.nos.isEmpty()) {
+            return false;
+        }
+        //Um grafo é igual ao outro se ambos tiverem os mesmos nos (nenhum a mais ou a menos)
+        if (!this.nos.containsAll(other.nos) || !other.nos.containsAll(this.nos))  {
+            return false;
+        }
+        //Para um grafo ser igual ao outro precisa que todas as arestas sejam as mesmas (nenhuma a mais ou a menos)
+        if ((!this.arestas.containsAll(other.arestas) || !other.arestas.containsAll(this.arestas) && !this.arestas.isEmpty())) {
+            return false;
+        }
+        return true;
     }
 }

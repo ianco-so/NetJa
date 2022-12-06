@@ -1,30 +1,24 @@
-package  org.example.libs;
+package  ufrn.edb2.libs;
 /**
 * Esta classe representa um nó no grafo.
  * Um nó do grafo tem um rotulo e um valor
  * Um nó é igual a outro se os seus rótulos forem iguais
 * @author @ianco-so and @fawnbr
 */
-public class No <R extends Comparable<R>, V> {
+public class No <R extends Comparable<R>> {
     private R rotulo;
-    private V valor;
 
     public No(R rotulo) {
         this.rotulo = rotulo;
-        this.valor = null;
     }
-    public No(R rotulo, V valor) {
-        this.rotulo = rotulo;
-        this.valor = valor;
-    }
+
     public R getRotulo() {
         return this.rotulo;
     }
 
-    public void setRotulo(R rotulo) { this.rotulo = rotulo;}
-    public V getValor() { return this.valor; }
-
-    public void setValor(V valor) { this.valor = valor; }
+    public void setRotulo(R rotulo) { 
+        this.rotulo = rotulo;
+    }
 
     @Override
     public String toString() {

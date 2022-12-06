@@ -23,7 +23,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>org.example.Main</mainClass>
+                            <mainClass>ufrn.edb2.Main</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

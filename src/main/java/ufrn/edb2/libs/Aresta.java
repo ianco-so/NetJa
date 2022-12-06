@@ -1,4 +1,4 @@
-package  org.example.libs;
+package  ufrn.edb2.libs;
 /**
 * Esta classe representa uma aresta em um grafo.
 * Têm dois nós e um peso.
@@ -6,12 +6,12 @@ package  org.example.libs;
 * E entre dois nós pode existir apenas uma aresta.
 * @author @ianco-so and @fawnbr
 */
-public class Aresta<R extends Comparable<R>, V> implements Comparable<Aresta> {
-    private final No<R,V> n1;
-    private final No<R,V> n2;
+public class Aresta<R extends Comparable<R>> implements Comparable<Aresta<R>> {
+    private final No<R> n1;
+    private final No<R> n2;
     private Integer custo;
 
-    public Aresta(No<R,V> n1, No<R,V> n2, Integer custo) {
+    public Aresta(No<R> n1, No<R> n2, Integer custo) {
         if (n1 == null || n2 == null) {
             throw new IllegalArgumentException("Nó nulo");
         }
@@ -22,7 +22,7 @@ public class Aresta<R extends Comparable<R>, V> implements Comparable<Aresta> {
         this.n2 = n2;
         this.custo = custo;
     }
-    public Aresta (No<R, V> n1, No<R,V> n2) {
+    public Aresta (No<R> n1, No<R> n2) {
         if (n1 == null || n2 == null) {
             throw new IllegalArgumentException("Nó nulo");
         }
@@ -58,10 +58,10 @@ public class Aresta<R extends Comparable<R>, V> implements Comparable<Aresta> {
 
     // GETTERS E SETTERS
 
-    public No<R,V> getNo1() {
+    public No<R> getNo1() {
         return this.n1;
     }
-    public No<R,V> getNo2() {
+    public No<R> getNo2() {
         return  this.n2;
     }
     public Integer getCusto() {
@@ -83,10 +83,7 @@ public class Aresta<R extends Comparable<R>, V> implements Comparable<Aresta> {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final Aresta other = (Aresta) obj;
-        if (other == null) {
-            return false;
-        }
+        final Aresta<R> other = (Aresta<R>) obj;
         if (this == other) {
             return true;
         }
@@ -104,7 +101,7 @@ public class Aresta<R extends Comparable<R>, V> implements Comparable<Aresta> {
     }
 
     @Override
-    public int compareTo(Aresta a) {
+    public int compareTo(Aresta<R> a) {
         return this.getCusto() - a.getCusto();
     }
 }
