@@ -3,10 +3,12 @@ package ufrn.edb2;
 import java.util.ArrayList;
 import java.util.List;
 
-import ufrn.edb2.libs.Aresta;
-import ufrn.edb2.libs.GeradorDeArvoresPorCombinacao;
-import ufrn.edb2.libs.Grafo;
-import ufrn.edb2.libs.No;
+import ufrn.edb2.model.RedeNetJa;
+import ufrn.edb2.model.arvore.Aresta;
+import ufrn.edb2.model.arvore.Grafo;
+import ufrn.edb2.model.arvore.No;
+import ufrn.edb2.service.GeradorDeArvoresPorCombinacao;
+import ufrn.edb2.utils.Parser;
 
 public class Main {
     public static void main(String[] args) {
